@@ -38,7 +38,7 @@ jobs:
           cd ${{ github.workspace }}/${{ github.event.inputs.tag }}
           npx cdk --require-approval never --toolkit-stack-name=CdpCdkToolkit --context environ=staging    -o opa.out
       - name: "Run Security Policy Check"
-        if: ${{ contains(github.event.head_commit.message, ${{ github.event.inputs.tag }}) }}
+        if: ${{ contains(github.event.head_commit.message, github.event.inputs.tag) }}
         run: |
           cd ${{ github.workspace }}/cdp_opa_security_policies
           opa eval --format json -i ${{ github.workspace }}/opa.out/*Creslab/*.template.json -d s3 "data"
