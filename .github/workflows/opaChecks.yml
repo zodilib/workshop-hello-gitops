@@ -10,7 +10,6 @@ on:
 jobs:
   opa-security-check:
     runs-on: ubuntu-latest
-    options: --user root
     defaults:
       run:
         working-directory: ${{ github.workspace }}
@@ -29,11 +28,10 @@ jobs:
           npm ci -D
       - name: "Install OPA binary and JQ"
         run: |
-          cd /usr/local
+          cd /tmp
           curl -L -o opa https://github.com/open-policy-agent/opa/releases/download/v0.11.0/opa_linux_amd64
           chmod +x opa
-          mv opa /usr/local/bin/
-          apt install -y jq
+          sudo apt install -y jq
       - name: Synth CDK stack for ${{ github.event.inputs.tag }}
         run: |
           cd ${{ github.workspace }}/${{ github.event.inputs.tag }}
