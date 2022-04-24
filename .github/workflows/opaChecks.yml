@@ -28,11 +28,11 @@ jobs:
           npm ci -D
       - name: "Install OPA binary and JQ"
         run: |
-          sudo cd /usr/local
-          sudo curl -L -o opa https://github.com/open-policy-agent/opa/releases/download/v0.11.0/opa_linux_amd64
-          sudo chmod +x opa
-          sudo mv opa /usr/local/bin/
-          sudo apt install -y jq
+          cd /usr/local
+          curl -L -o opa https://github.com/open-policy-agent/opa/releases/download/v0.11.0/opa_linux_amd64
+          chmod +x opa
+          mv opa /usr/local/bin/
+          apt install -y jq
       - name: Synth CDK stack for ${{ github.event.inputs.tag }}
         run: |
           cd ${{ github.workspace }}/${{ github.event.inputs.tag }}
