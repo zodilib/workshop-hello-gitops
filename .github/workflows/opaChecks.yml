@@ -1,0 +1,44 @@
+name: "OPA Policy and Config Check"
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "project directory of the stack for policy to run"
+        required: true
+        default: "cdp_creslab"
+
+jobs:
+  opa-security-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+    strategy:
+      matrix:
+        node-version: [16]
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v3
+      - name: Setup Node Version
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - name: Install dependencies
+        run: |
+          npm ci -D
+      - name: "Install OPA binary and JQ"
+        run: |
+          sudo cd /usr/local
+          sudo curl -L -o opa https://github.com/open-policy-agent/opa/releases/download/v0.11.0/opa_linux_amd64
+          sudo chmod +x opa
+          sudo mv opa /usr/local/bin/
+          sudo apt install -y jq
+      - name: Synth CDK stack for ${{ github.event.inputs.tag }}
+        run: |
+          cd ${{ github.workspace }}/${{ github.event.inputs.tag }}
+          npx cdk --require-approval never --toolkit-stack-name=CdpCdkToolkit --context environ=staging    -o opa.out
+      - name: "Run Security Policy Check"
+        if: ${{ contains(github.event.head_commit.message, ${{ github.event.inputs.tag }}) }}
+        run: |
+          cd ${{ github.workspace }}/cdp_opa_security_policies
+          opa eval --format json -i ${{ github.workspace }}/opa.out/*Creslab/*.template.json -d s3 "data"

@@ -1,0 +1,22 @@
+---
+vpcId: vpc-04d9b8c85ca7d561f
+creslabSecretName: creslab-secret-keys
+s3BucketNames:
+  data: hyphen-data-lake-prod
+supportEmailRecipients:
+  - "data-prod-cdp@hyphengroup.opsgenie.net"
+cidrs:
+  metabase:
+    - 10.97.4.0/22
+    - 10.97.12.0/22
+  app:
+    - 10.194.40.0/22
+    - 10.194.32.0/22
+    - 10.194.24.0/22
+    - 10.194.20.0/22
+    - 10.194.16.0/22
+    - 10.194.36.0/22
+  data:
+    - 10.194.12.0/24
+    - 10.194.13.0/24
+    - 10.194.14.0/24
