@@ -28,6 +28,7 @@ jobs:
           npm ci -D
       - name: "Install OPA binary and JQ"
         run: |
+          su - 
           cd /usr/local
           curl -L -o opa https://github.com/open-policy-agent/opa/releases/download/v0.11.0/opa_linux_amd64
           chmod +x opa
