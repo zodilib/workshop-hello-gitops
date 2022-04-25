@@ -29,6 +29,7 @@ jobs:
       - name: Synth CDK stack for ${{ github.event.inputs.tag }}
         run: |
           cd ${{ github.workspace }}/${{ github.event.inputs.tag }}
+          pwd
           npx cdk --require-approval never --toolkit-stack-name=CdpCdkToolkit --context environ=staging synth -o opa.out
       - name: "Install OPA binary and JQ"
         run: |
