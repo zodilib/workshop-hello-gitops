@@ -1,7 +1,5 @@
 package s3.public_access
 
-import future.keywords
-
 resource_type = "AWS::S3::Bucket"
  
 default allow = true
