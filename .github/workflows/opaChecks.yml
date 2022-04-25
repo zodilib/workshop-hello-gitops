@@ -30,7 +30,7 @@ jobs:
         run: |
           cd ${{ github.workspace }}/${{ github.event.inputs.tag }}
           pwd
-          npx cdk --require-approval never --toolkit-stack-name=CdpCdkToolkit --context environ=staging synth -o opa.out
+          npx cdk --require-approval never --resolveJsonModule --toolkit-stack-name=CdpCdkToolkit --context environ=staging synth -o opa.out
       - name: "Install OPA binary and JQ"
         run: |
           cd /tmp
