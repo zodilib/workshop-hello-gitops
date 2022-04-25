@@ -1,0 +1,1896 @@
+{
+  "Resources": {
+    "dataBucketNotifications88F53D15": {
+      "Type": "Custom::S3BucketNotifications",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+            "Arn"
+          ]
+        },
+        "BucketName": "hyphen-data-lake-dev",
+        "NotificationConfiguration": {
+          "LambdaFunctionConfigurations": [
+            {
+              "Events": [
+                "s3:ObjectCreated:*"
+              ],
+              "Filter": {
+                "Key": {
+                  "FilterRules": [
+                    {
+                      "Name": "suffix",
+                      "Value": ".json"
+                    },
+                    {
+                      "Name": "prefix",
+                      "Value": "money101/creslab/landing/submitted_surveys/"
+                    }
+                  ]
+                }
+              },
+              "LambdaFunctionArn": {
+                "Fn::GetAtt": [
+                  "surveycakeET5E61942A",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "Managed": false
+      },
+      "DependsOn": [
+        "dataBucketAllowBucketNotificationsTodevCreslabCreslabStatelesssurveycakeET89028592831A1195"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/dataBucket/Notifications/Resource"
+      }
+    },
+    "dataBucketAllowBucketNotificationsTodevCreslabCreslabStatelesssurveycakeET89028592831A1195": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "surveycakeET5E61942A",
+            "Arn"
+          ]
+        },
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": "263014800304",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":s3:::hyphen-data-lake-dev"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/dataBucket/AllowBucketNotificationsTodevCreslabCreslabStatelesssurveycakeET89028592"
+      }
+    },
+    "cdpcreslabmoney101A8BD0651": {
+      "Type": "AWS::Glue::Database",
+      "Properties": {
+        "CatalogId": "263014800304",
+        "DatabaseInput": {
+          "Name": "cdp_creslab_money101"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/cdp_creslab_money101/Resource"
+      }
+    },
+    "wehookAuthenticatorlambdaRoleBB337DF3": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/wehookAuthenticator-lambdaRole/Resource"
+      }
+    },
+    "wehookAuthenticatorlambdaRoleDefaultPolicy94994ED2": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::hyphen-data-lake-dev",
+                "arn:aws:s3:::hyphen-data-lake-dev/*"
+              ]
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":secretsmanager:ap-southeast-1:263014800304:secret:creslab-secret-keys-??????"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "wehookAuthenticatorlambdaRoleDefaultPolicy94994ED2",
+        "Roles": [
+          {
+            "Ref": "wehookAuthenticatorlambdaRoleBB337DF3"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/wehookAuthenticator-lambdaRole/DefaultPolicy/Resource"
+      }
+    },
+    "wehookAuthenticatorSecurityGroupBAE82009": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatic security group for Lambda Function devCreslabCreslabStatelesswehookAuthenticatorDD0CF882",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": "vpc-12345"
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/wehookAuthenticator/SecurityGroup/Resource"
+      }
+    },
+    "wehookAuthenticatorD434BDEE": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersb32513dc7a8264a76ba3512f75ba6ae20a90426dd7adb3e2fd4892c3e0c21b30S3BucketE1E257A0"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb32513dc7a8264a76ba3512f75ba6ae20a90426dd7adb3e2fd4892c3e0c21b30S3VersionKeyCDB5CE41"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb32513dc7a8264a76ba3512f75ba6ae20a90426dd7adb3e2fd4892c3e0c21b30S3VersionKeyCDB5CE41"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "wehookAuthenticatorlambdaRoleBB337DF3",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "BUCKET_NAME": "hyphen-data-lake-dev",
+            "SECRET_NAME": "creslab-secret-keys"
+          }
+        },
+        "Handler": "index.handler",
+        "MemorySize": 2048,
+        "Runtime": "python3.7",
+        "Timeout": 300,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "wehookAuthenticatorSecurityGroupBAE82009",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            "p-12345",
+            "p-67890"
+          ]
+        }
+      },
+      "DependsOn": [
+        "wehookAuthenticatorlambdaRoleDefaultPolicy94994ED2",
+        "wehookAuthenticatorlambdaRoleBB337DF3"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/wehookAuthenticator/Resource",
+        "aws:asset:path": "../asset.b32513dc7a8264a76ba3512f75ba6ae20a90426dd7adb3e2fd4892c3e0c21b30",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "wehookAuthenticatorEventInvokeConfigA5F48B10": {
+      "Type": "AWS::Lambda::EventInvokeConfig",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "wehookAuthenticatorD434BDEE"
+        },
+        "Qualifier": "$LATEST",
+        "MaximumRetryAttempts": 2
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/wehookAuthenticator/EventInvokeConfig/Resource"
+      }
+    },
+    "surveycakeETlambdaRole0F1AA915": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/surveycakeET-lambdaRole/Resource"
+      }
+    },
+    "surveycakeETlambdaRoleDefaultPolicyD75CBFBD": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::hyphen-data-lake-dev",
+                "arn:aws:s3:::hyphen-data-lake-dev/*"
+              ]
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":secretsmanager:ap-southeast-1:263014800304:secret:creslab-secret-keys-??????"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "surveycakeETlambdaRoleDefaultPolicyD75CBFBD",
+        "Roles": [
+          {
+            "Ref": "surveycakeETlambdaRole0F1AA915"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/surveycakeET-lambdaRole/DefaultPolicy/Resource"
+      }
+    },
+    "surveycakeETSecurityGroup9C44D13F": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatic security group for Lambda Function devCreslabCreslabStatelesssurveycakeET89028592",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": "vpc-12345"
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/surveycakeET/SecurityGroup/Resource"
+      }
+    },
+    "surveycakeET5E61942A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersa882eabf5e1e45974c2d66065ba662af7f795bbe3836979d5c254b41abeead76S3Bucket45201FC3"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersa882eabf5e1e45974c2d66065ba662af7f795bbe3836979d5c254b41abeead76S3VersionKeyFDD00D6D"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersa882eabf5e1e45974c2d66065ba662af7f795bbe3836979d5c254b41abeead76S3VersionKeyFDD00D6D"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "surveycakeETlambdaRole0F1AA915",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "BUCKET_NAME": "hyphen-data-lake-dev",
+            "SECRET_NAME": "creslab-secret-keys"
+          }
+        },
+        "Handler": "index.handler",
+        "MemorySize": 2048,
+        "Runtime": "python3.7",
+        "Timeout": 300,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "surveycakeETSecurityGroup9C44D13F",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            "p-12345",
+            "p-67890"
+          ]
+        }
+      },
+      "DependsOn": [
+        "surveycakeETlambdaRoleDefaultPolicyD75CBFBD",
+        "surveycakeETlambdaRole0F1AA915"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/surveycakeET/Resource",
+        "aws:asset:path": "../asset.a882eabf5e1e45974c2d66065ba662af7f795bbe3836979d5c254b41abeead76",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "surveycakeETEventInvokeConfig437EEB42": {
+      "Type": "AWS::Lambda::EventInvokeConfig",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "surveycakeET5E61942A"
+        },
+        "Qualifier": "$LATEST",
+        "MaximumRetryAttempts": 0
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/surveycakeET/EventInvokeConfig/Resource"
+      }
+    },
+    "MAAC669450B8": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "MAAC"
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/MAAC/Resource"
+      }
+    },
+    "MAACCloudWatchRoleD48D1769": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/MAAC/CloudWatchRole/Resource"
+      }
+    },
+    "MAACAccount3E30EE97": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "MAACCloudWatchRoleD48D1769",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "MAAC669450B8"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/MAAC/Account"
+      }
+    },
+    "MAACDeploymentAC060A3Ef5d052881ab5678d501868ed2b674d66": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MAAC669450B8"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "MAACWebhookPOSTA829AF61",
+        "MAACWebhookCE790ECE"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/MAAC/Deployment/Resource"
+      }
+    },
+    "MAACDeploymentStageprod6B58C173": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MAAC669450B8"
+        },
+        "DeploymentId": {
+          "Ref": "MAACDeploymentAC060A3Ef5d052881ab5678d501868ed2b674d66"
+        },
+        "StageName": "prod"
+      },
+      "DependsOn": [
+        "MAACAccount3E30EE97"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/MAAC/DeploymentStage.prod/Resource"
+      }
+    },
+    "MAACWebhookCE790ECE": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "MAAC669450B8",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "Webhook",
+        "RestApiId": {
+          "Ref": "MAAC669450B8"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/MAAC/Default/Webhook/Resource"
+      }
+    },
+    "MAACWebhookPOSTApiPermissiondevCreslabCreslabStatelessMAAC334A2343POSTWebhook9D2CCD15": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "wehookAuthenticatorD434BDEE",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:ap-southeast-1:263014800304:",
+              {
+                "Ref": "MAAC669450B8"
+              },
+              "/",
+              {
+                "Ref": "MAACDeploymentStageprod6B58C173"
+              },
+              "/POST/Webhook"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/MAAC/Default/Webhook/POST/ApiPermission.devCreslabCreslabStatelessMAAC334A2343.POST..Webhook"
+      }
+    },
+    "MAACWebhookPOSTApiPermissionTestdevCreslabCreslabStatelessMAAC334A2343POSTWebhookF8E38D0B": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "wehookAuthenticatorD434BDEE",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:ap-southeast-1:263014800304:",
+              {
+                "Ref": "MAAC669450B8"
+              },
+              "/test-invoke-stage/POST/Webhook"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/MAAC/Default/Webhook/POST/ApiPermission.Test.devCreslabCreslabStatelessMAAC334A2343.POST..Webhook"
+      }
+    },
+    "MAACWebhookPOSTA829AF61": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "ResourceId": {
+          "Ref": "MAACWebhookCE790ECE"
+        },
+        "RestApiId": {
+          "Ref": "MAAC669450B8"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:ap-southeast-1:lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "wehookAuthenticatorD434BDEE",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/MAAC/Default/Webhook/POST/Resource"
+      }
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource"
+      }
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutBucketNotification",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "s3:GetBucketNotification",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "Roles": [
+          {
+            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource"
+      }
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Description": "AWS CloudFormation handler for \"Custom::S3BucketNotifications\" resources (@aws-cdk/aws-s3)",
+        "Code": {
+          "ZipFile": "import boto3  # type: ignore\nimport json\nimport logging\nimport urllib.request\n\ns3 = boto3.client(\"s3\")\n\nCONFIGURATION_TYPES = [\"TopicConfigurations\", \"QueueConfigurations\", \"LambdaFunctionConfigurations\"]\n\ndef handler(event: dict, context):\n    response_status = \"SUCCESS\"\n    error_message = \"\"\n    try:\n        props = event[\"ResourceProperties\"]\n        bucket = props[\"BucketName\"]\n        notification_configuration = props[\"NotificationConfiguration\"]\n        request_type = event[\"RequestType\"]\n        managed = props.get('Managed', 'true').lower() == 'true'\n        stack_id = event['StackId']\n\n        if managed:\n          config = handle_managed(request_type, notification_configuration)\n        else:\n          config = handle_unmanaged(bucket, stack_id, request_type, notification_configuration)\n\n        put_bucket_notification_configuration(bucket, config)\n    except Exception as e:\n        logging.exception(\"Failed to put bucket notification configuration\")\n        response_status = \"FAILED\"\n        error_message = f\"Error: {str(e)}. \"\n    finally:\n        submit_response(event, context, response_status, error_message)\n\n\ndef handle_managed(request_type, notification_configuration):\n  if request_type == 'Delete':\n    return {}\n  return notification_configuration\n\n\ndef handle_unmanaged(bucket, stack_id, request_type, notification_configuration):\n\n  # find external notifications\n  external_notifications = find_external_notifications(bucket, stack_id)\n\n  # if delete, that's all we need\n  if request_type == 'Delete':\n    return external_notifications\n\n  def with_id(notification):\n    notification['Id'] = f\"{stack_id}-{hash(json.dumps(notification, sort_keys=True))}\"\n    return notification\n\n  # otherwise, merge external with incoming config and augment with id\n  notifications = {}\n  for t in CONFIGURATION_TYPES:\n    external = external_notifications.get(t, [])\n    incoming = [with_id(n) for n in notification_configuration.get(t, [])]\n    notifications[t] = external + incoming\n  return notifications\n\n\ndef find_external_notifications(bucket, stack_id):\n  existing_notifications = get_bucket_notification_configuration(bucket)\n  external_notifications = {}\n  for t in CONFIGURATION_TYPES:\n    # if the notification was created by us, we know what id to expect\n    # so we can filter by it.\n    external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'].startswith(f\"{stack_id}-\")]\n\n  return external_notifications\n\n\ndef get_bucket_notification_configuration(bucket):\n  return s3.get_bucket_notification_configuration(Bucket=bucket)\n\n\ndef put_bucket_notification_configuration(bucket, notification_configuration):\n  s3.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=notification_configuration)\n\n\ndef submit_response(event: dict, context, response_status: str, error_message: str):\n    response_body = json.dumps(\n        {\n            \"Status\": response_status,\n            \"Reason\": f\"{error_message}See the details in CloudWatch Log Stream: {context.log_stream_name}\",\n            \"PhysicalResourceId\": event.get(\"PhysicalResourceId\") or event[\"LogicalResourceId\"],\n            \"StackId\": event[\"StackId\"],\n            \"RequestId\": event[\"RequestId\"],\n            \"LogicalResourceId\": event[\"LogicalResourceId\"],\n            \"NoEcho\": False,\n        }\n    ).encode(\"utf-8\")\n    headers = {\"content-type\": \"\", \"content-length\": str(len(response_body))}\n    try:\n        req = urllib.request.Request(url=event[\"ResponseURL\"], headers=headers, data=response_body, method=\"PUT\")\n        with urllib.request.urlopen(req) as response:\n            print(response.read().decode(\"utf-8\"))\n        print(\"Status code: \" + response.reason)\n    except Exception as e:\n        print(\"send(..) failed executing request.urlopen(..): \" + str(e))\n"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.7",
+        "Timeout": 300
+      },
+      "DependsOn": [
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource"
+      }
+    },
+    "crescendoMemberTableCB5258FE": {
+      "Type": "AWS::Glue::Table",
+      "Properties": {
+        "CatalogId": "263014800304",
+        "DatabaseName": {
+          "Ref": "cdpcreslabmoney101A8BD0651"
+        },
+        "TableInput": {
+          "Description": "crescendo_member_landing generated by CDK",
+          "Name": "crescendo_member_landing",
+          "Parameters": {
+            "classification": "parquet",
+            "has_encrypted_data": false
+          },
+          "PartitionKeys": [
+            {
+              "Name": "dt",
+              "Type": "string"
+            }
+          ],
+          "StorageDescriptor": {
+            "Columns": [
+              {
+                "Name": "line_uid",
+                "Type": "string"
+              },
+              {
+                "Name": "email_marketing_hash",
+                "Type": "string"
+              },
+              {
+                "Name": "mobile_marketing_hash",
+                "Type": "string"
+              },
+              {
+                "Name": "customer_id",
+                "Type": "string"
+              },
+              {
+                "Name": "gender",
+                "Type": "string"
+              },
+              {
+                "Name": "birthday",
+                "Type": "string"
+              },
+              {
+                "Name": "tags",
+                "Type": "string"
+              },
+              {
+                "Name": "status",
+                "Type": "string"
+              },
+              {
+                "Name": "updated_at",
+                "Type": "bigint"
+              },
+              {
+                "Name": "created_at",
+                "Type": "bigint"
+              }
+            ],
+            "Compressed": false,
+            "InputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat",
+            "Location": "s3://hyphen-data-lake-dev/money101/creslab/landing/memberlist",
+            "OutputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat",
+            "SerdeInfo": {
+              "SerializationLibrary": "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
+            },
+            "StoredAsSubDirectories": false
+          },
+          "TableType": "EXTERNAL_TABLE"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/crescendoMember/Table"
+      }
+    },
+    "chunkMemberlistlambdaRole9E51E0A3": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/chunkMemberlist-lambdaRole/Resource"
+      }
+    },
+    "chunkMemberlistlambdaRoleDefaultPolicy6091A2CE": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::hyphen-data-lake-dev",
+                "arn:aws:s3:::hyphen-data-lake-dev/*"
+              ]
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":secretsmanager:ap-southeast-1:263014800304:secret:creslab-secret-keys-??????"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "chunkMemberlistlambdaRoleDefaultPolicy6091A2CE",
+        "Roles": [
+          {
+            "Ref": "chunkMemberlistlambdaRole9E51E0A3"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/chunkMemberlist-lambdaRole/DefaultPolicy/Resource"
+      }
+    },
+    "chunkMemberlistSecurityGroup91FDAC4E": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatic security group for Lambda Function devCreslabCreslabStatelesschunkMemberlist63BFE771",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": "vpc-12345"
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/chunkMemberlist/SecurityGroup/Resource"
+      }
+    },
+    "chunkMemberlist2640393D": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters717ca2100f5aae0829b82e1da6dd97218658d00a0b8d028038c07f8200ff5e18S3BucketE7CE51D2"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters717ca2100f5aae0829b82e1da6dd97218658d00a0b8d028038c07f8200ff5e18S3VersionKeyF39D2D9C"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters717ca2100f5aae0829b82e1da6dd97218658d00a0b8d028038c07f8200ff5e18S3VersionKeyF39D2D9C"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "chunkMemberlistlambdaRole9E51E0A3",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "BUCKET_NAME": "hyphen-data-lake-dev",
+            "SECRET_NAME": "creslab-secret-keys"
+          }
+        },
+        "Handler": "index.handler",
+        "MemorySize": 2048,
+        "Runtime": "python3.7",
+        "Timeout": 300,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "chunkMemberlistSecurityGroup91FDAC4E",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            "p-12345",
+            "p-67890"
+          ]
+        }
+      },
+      "DependsOn": [
+        "chunkMemberlistlambdaRoleDefaultPolicy6091A2CE",
+        "chunkMemberlistlambdaRole9E51E0A3"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/chunkMemberlist/Resource",
+        "aws:asset:path": "../asset.717ca2100f5aae0829b82e1da6dd97218658d00a0b8d028038c07f8200ff5e18",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "chunkMemberlistEventInvokeConfig2A953517": {
+      "Type": "AWS::Lambda::EventInvokeConfig",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "chunkMemberlist2640393D"
+        },
+        "Qualifier": "$LATEST",
+        "MaximumRetryAttempts": 0
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/chunkMemberlist/EventInvokeConfig/Resource"
+      }
+    },
+    "getMemberlistlambdaRoleED124F91": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/getMemberlist-lambdaRole/Resource"
+      }
+    },
+    "getMemberlistlambdaRoleDefaultPolicyFCFA40A6": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::hyphen-data-lake-dev",
+                "arn:aws:s3:::hyphen-data-lake-dev/*"
+              ]
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":secretsmanager:ap-southeast-1:263014800304:secret:creslab-secret-keys-??????"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "getMemberlistlambdaRoleDefaultPolicyFCFA40A6",
+        "Roles": [
+          {
+            "Ref": "getMemberlistlambdaRoleED124F91"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/getMemberlist-lambdaRole/DefaultPolicy/Resource"
+      }
+    },
+    "getMemberlistSecurityGroup5FB847E7": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatic security group for Lambda Function devCreslabCreslabStatelessgetMemberlist2BE5DB53",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": "vpc-12345"
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/getMemberlist/SecurityGroup/Resource"
+      }
+    },
+    "getMemberlist8DFF8006": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters34d2609cf62f7cad0d84f1f54a98f3e4977e444219e4911fc5442c4d368f726eS3Bucket56002A3E"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters34d2609cf62f7cad0d84f1f54a98f3e4977e444219e4911fc5442c4d368f726eS3VersionKeyABB85DD5"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters34d2609cf62f7cad0d84f1f54a98f3e4977e444219e4911fc5442c4d368f726eS3VersionKeyABB85DD5"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "getMemberlistlambdaRoleED124F91",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "BUCKET_NAME": "hyphen-data-lake-dev",
+            "SECRET_NAME": "creslab-secret-keys"
+          }
+        },
+        "Handler": "index.handler",
+        "MemorySize": 10240,
+        "Runtime": "python3.7",
+        "Timeout": 900,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "getMemberlistSecurityGroup5FB847E7",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            "p-12345",
+            "p-67890"
+          ]
+        }
+      },
+      "DependsOn": [
+        "getMemberlistlambdaRoleDefaultPolicyFCFA40A6",
+        "getMemberlistlambdaRoleED124F91"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/getMemberlist/Resource",
+        "aws:asset:path": "../asset.34d2609cf62f7cad0d84f1f54a98f3e4977e444219e4911fc5442c4d368f726e",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "getMemberlistEventInvokeConfigBC8C7F3C": {
+      "Type": "AWS::Lambda::EventInvokeConfig",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "getMemberlist8DFF8006"
+        },
+        "Qualifier": "$LATEST",
+        "MaximumRetryAttempts": 2
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/getMemberlist/EventInvokeConfig/Resource"
+      }
+    },
+    "updateMemberlistlambdaRole4B3355A6": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonAthenaFullAccess"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/updateMemberlist-lambdaRole/Resource"
+      }
+    },
+    "updateMemberlistlambdaRoleDefaultPolicy15721641": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::hyphen-data-lake-dev",
+                "arn:aws:s3:::hyphen-data-lake-dev/*"
+              ]
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":secretsmanager:ap-southeast-1:263014800304:secret:creslab-secret-keys-??????"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "updateMemberlistlambdaRoleDefaultPolicy15721641",
+        "Roles": [
+          {
+            "Ref": "updateMemberlistlambdaRole4B3355A6"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/updateMemberlist-lambdaRole/DefaultPolicy/Resource"
+      }
+    },
+    "updateMemberlistSecurityGroupD350A4A1": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatic security group for Lambda Function devCreslabCreslabStatelessupdateMemberlist8C15A73B",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": "vpc-12345"
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/updateMemberlist/SecurityGroup/Resource"
+      }
+    },
+    "updateMemberlist39B5BAC7": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersd00e5f466d2b81ebd2e81c50843dd7095341129d74f26135c6997c27028e7d8bS3Bucket00D3A615"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersd00e5f466d2b81ebd2e81c50843dd7095341129d74f26135c6997c27028e7d8bS3VersionKeyA5815049"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersd00e5f466d2b81ebd2e81c50843dd7095341129d74f26135c6997c27028e7d8bS3VersionKeyA5815049"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "updateMemberlistlambdaRole4B3355A6",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "BUCKET_NAME": "hyphen-data-lake-dev",
+            "SECRET_NAME": "creslab-secret-keys"
+          }
+        },
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Runtime": "python3.7",
+        "Timeout": 900,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "updateMemberlistSecurityGroupD350A4A1",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            "p-12345",
+            "p-67890"
+          ]
+        }
+      },
+      "DependsOn": [
+        "updateMemberlistlambdaRoleDefaultPolicy15721641",
+        "updateMemberlistlambdaRole4B3355A6"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/updateMemberlist/Resource",
+        "aws:asset:path": "../asset.d00e5f466d2b81ebd2e81c50843dd7095341129d74f26135c6997c27028e7d8b",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "updateMemberlistEventInvokeConfig6DFC0EE9": {
+      "Type": "AWS::Lambda::EventInvokeConfig",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "updateMemberlist39B5BAC7"
+        },
+        "Qualifier": "$LATEST",
+        "MaximumRetryAttempts": 2
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/updateMemberlist/EventInvokeConfig/Resource"
+      }
+    },
+    "memberlistPipelineRole84A00B42": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.ap-southeast-1.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/memberlistPipeline/Role/Resource"
+      }
+    },
+    "memberlistPipelineRoleDefaultPolicyE3B9764C": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "chunkMemberlist2640393D",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "updateMemberlist39B5BAC7",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "getMemberlist8DFF8006",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "memberlistPipelineRoleDefaultPolicyE3B9764C",
+        "Roles": [
+          {
+            "Ref": "memberlistPipelineRole84A00B42"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/memberlistPipeline/Role/DefaultPolicy/Resource"
+      }
+    },
+    "memberlistPipeline6FB6D099": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "memberlistPipelineRole84A00B42",
+            "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"sfnChunkMemberlist\",\"States\":{\"sfnChunkMemberlist\":{\"Next\":\"sfnMapGetMemberlist\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+              {
+                "Fn::GetAtt": [
+                  "chunkMemberlist2640393D",
+                  "Arn"
+                ]
+              },
+              "\",\"Payload.$\":\"$\"}},\"sfnMapGetMemberlist\":{\"Type\":\"Map\",\"ResultPath\":null,\"Next\":\"sfnUpdateMemberlist\",\"Iterator\":{\"StartAt\":\"sfnGetMemberlist\",\"States\":{\"sfnGetMemberlist\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+              {
+                "Fn::GetAtt": [
+                  "getMemberlist8DFF8006",
+                  "Arn"
+                ]
+              },
+              "\",\"Payload.$\":\"$\"}}}},\"ItemsPath\":\"$.chunks\",\"MaxConcurrency\":12},\"sfnUpdateMemberlist\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+              {
+                "Fn::GetAtt": [
+                  "updateMemberlist39B5BAC7",
+                  "Arn"
+                ]
+              },
+              "\",\"Payload.$\":\"$\"}}},\"TimeoutSeconds\":1800}"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "memberlistPipelineRoleDefaultPolicyE3B9764C",
+        "memberlistPipelineRole84A00B42"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/memberlistPipeline/Resource"
+      }
+    },
+    "memberlistPipelineEventsRole622F5378": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/memberlistPipeline/EventsRole/Resource"
+      }
+    },
+    "memberlistPipelineEventsRoleDefaultPolicy07B608A8": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "memberlistPipeline6FB6D099"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "memberlistPipelineEventsRoleDefaultPolicy07B608A8",
+        "Roles": [
+          {
+            "Ref": "memberlistPipelineEventsRole622F5378"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/memberlistPipeline/EventsRole/DefaultPolicy/Resource"
+      }
+    },
+    "triggerMemberlistPolicyAE36C57B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "memberlistPipeline6FB6D099"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "triggerMemberlistPolicyAE36C57B",
+        "Roles": [
+          {
+            "Ref": "memberlistPipelineRole84A00B42"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/triggerMemberlistPolicy/Resource"
+      }
+    },
+    "Rule4C995B7F": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "ScheduleExpression": "cron(30 16 * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "memberlistPipeline6FB6D099"
+            },
+            "Id": "Target0",
+            "RoleArn": {
+              "Fn::GetAtt": [
+                "memberlistPipelineEventsRole622F5378",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/Rule/Resource"
+      }
+    },
+    "crescendoSurveyTableA04241A4": {
+      "Type": "AWS::Glue::Table",
+      "Properties": {
+        "CatalogId": "263014800304",
+        "DatabaseName": {
+          "Ref": "cdpcreslabmoney101A8BD0651"
+        },
+        "TableInput": {
+          "Description": "crescendo_survey_processed generated by CDK",
+          "Name": "crescendo_survey_processed",
+          "Parameters": {
+            "classification": "parquet",
+            "has_encrypted_data": false
+          },
+          "StorageDescriptor": {
+            "Columns": [
+              {
+                "Name": "line_uid",
+                "Type": "string"
+              },
+              {
+                "Name": "survey_name",
+                "Type": "string"
+              },
+              {
+                "Name": "title",
+                "Type": "string"
+              },
+              {
+                "Name": "status",
+                "Type": "string"
+              },
+              {
+                "Name": "submittime",
+                "Type": "bigint"
+              },
+              {
+                "Name": "question",
+                "Type": "string"
+              },
+              {
+                "Name": "answer",
+                "Type": "string"
+              }
+            ],
+            "Compressed": false,
+            "InputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat",
+            "Location": "s3://hyphen-data-lake-dev/money101/creslab/processed/submitted_surveys",
+            "OutputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat",
+            "SerdeInfo": {
+              "SerializationLibrary": "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
+            },
+            "StoredAsSubDirectories": false
+          },
+          "TableType": "EXTERNAL_TABLE"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/crescendoSurvey/Table"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/2VSXW/CMAz8LbyHMGCatLfxsU2ThobY/oAJpoS2SRU7oKrqf1+SQhnak88XN767dCzHj8/yYfACZxqqXT5qlHUom28GlYsNkvVOoVhYQ+y8YrHYm56dESGHyUybLB6swUGJjC42X54rz62IFzc0lXOvcuQ5EIoCyu0OZBM/QVdqIm2NePNGcQSB7vHrCQ1/mJPNMWjY67TnH9mKrPBB9RIYtnFDGOrxD2yLxCTQCg2lbDa241Jd20KrOjlIqBU0HUI0RzJ5FKgmIRNU3mmu3531VZy+I4LTSmfAeIY63I/Es0pf4rrCmVLWGxZLrApbl8FFUnrrYphJVweuSafUbo/x5wlWyAe7i1SHgnTGan+Jj4YMlJP8TIF3id0PyGYFVVzLuAJ10Oa6ve9bgTHuMLnxl8xCbdtWGLtDeaTRafwU/iI5GRxJ66ELBnWJctPVX/cKfVBhAgAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "devCreslab/CreslabStateless/CDKMetadata/Default"
+      }
+    }
+  },
+  "Parameters": {
+    "AssetParametersb32513dc7a8264a76ba3512f75ba6ae20a90426dd7adb3e2fd4892c3e0c21b30S3BucketE1E257A0": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"b32513dc7a8264a76ba3512f75ba6ae20a90426dd7adb3e2fd4892c3e0c21b30\""
+    },
+    "AssetParametersb32513dc7a8264a76ba3512f75ba6ae20a90426dd7adb3e2fd4892c3e0c21b30S3VersionKeyCDB5CE41": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"b32513dc7a8264a76ba3512f75ba6ae20a90426dd7adb3e2fd4892c3e0c21b30\""
+    },
+    "AssetParametersb32513dc7a8264a76ba3512f75ba6ae20a90426dd7adb3e2fd4892c3e0c21b30ArtifactHash7504D0C4": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"b32513dc7a8264a76ba3512f75ba6ae20a90426dd7adb3e2fd4892c3e0c21b30\""
+    },
+    "AssetParametersa882eabf5e1e45974c2d66065ba662af7f795bbe3836979d5c254b41abeead76S3Bucket45201FC3": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"a882eabf5e1e45974c2d66065ba662af7f795bbe3836979d5c254b41abeead76\""
+    },
+    "AssetParametersa882eabf5e1e45974c2d66065ba662af7f795bbe3836979d5c254b41abeead76S3VersionKeyFDD00D6D": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"a882eabf5e1e45974c2d66065ba662af7f795bbe3836979d5c254b41abeead76\""
+    },
+    "AssetParametersa882eabf5e1e45974c2d66065ba662af7f795bbe3836979d5c254b41abeead76ArtifactHash3A80C905": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"a882eabf5e1e45974c2d66065ba662af7f795bbe3836979d5c254b41abeead76\""
+    },
+    "AssetParameters717ca2100f5aae0829b82e1da6dd97218658d00a0b8d028038c07f8200ff5e18S3BucketE7CE51D2": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"717ca2100f5aae0829b82e1da6dd97218658d00a0b8d028038c07f8200ff5e18\""
+    },
+    "AssetParameters717ca2100f5aae0829b82e1da6dd97218658d00a0b8d028038c07f8200ff5e18S3VersionKeyF39D2D9C": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"717ca2100f5aae0829b82e1da6dd97218658d00a0b8d028038c07f8200ff5e18\""
+    },
+    "AssetParameters717ca2100f5aae0829b82e1da6dd97218658d00a0b8d028038c07f8200ff5e18ArtifactHashFB169DC4": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"717ca2100f5aae0829b82e1da6dd97218658d00a0b8d028038c07f8200ff5e18\""
+    },
+    "AssetParameters34d2609cf62f7cad0d84f1f54a98f3e4977e444219e4911fc5442c4d368f726eS3Bucket56002A3E": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"34d2609cf62f7cad0d84f1f54a98f3e4977e444219e4911fc5442c4d368f726e\""
+    },
+    "AssetParameters34d2609cf62f7cad0d84f1f54a98f3e4977e444219e4911fc5442c4d368f726eS3VersionKeyABB85DD5": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"34d2609cf62f7cad0d84f1f54a98f3e4977e444219e4911fc5442c4d368f726e\""
+    },
+    "AssetParameters34d2609cf62f7cad0d84f1f54a98f3e4977e444219e4911fc5442c4d368f726eArtifactHashDDA3F66D": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"34d2609cf62f7cad0d84f1f54a98f3e4977e444219e4911fc5442c4d368f726e\""
+    },
+    "AssetParametersd00e5f466d2b81ebd2e81c50843dd7095341129d74f26135c6997c27028e7d8bS3Bucket00D3A615": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"d00e5f466d2b81ebd2e81c50843dd7095341129d74f26135c6997c27028e7d8b\""
+    },
+    "AssetParametersd00e5f466d2b81ebd2e81c50843dd7095341129d74f26135c6997c27028e7d8bS3VersionKeyA5815049": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"d00e5f466d2b81ebd2e81c50843dd7095341129d74f26135c6997c27028e7d8b\""
+    },
+    "AssetParametersd00e5f466d2b81ebd2e81c50843dd7095341129d74f26135c6997c27028e7d8bArtifactHash5BF87EBD": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"d00e5f466d2b81ebd2e81c50843dd7095341129d74f26135c6997c27028e7d8b\""
+    }
+  },
+  "Outputs": {
+    "MAACEndpoint76D04AAE": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "MAAC669450B8"
+            },
+            ".execute-api.ap-southeast-1.",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "MAACDeploymentStageprod6B58C173"
+            },
+            "/"
+          ]
+        ]
+      }
+    }
+  }
+}
