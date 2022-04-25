@@ -38,7 +38,7 @@ jobs:
           chmod +x opa
           sudo apt install -y jq
       - name: "Run Security Policy Check"
-        if: ${{ contains(github.event.head_commit.message, github.event.inputs.tag) }}
+        # if: ${{ contains(github.event.head_commit.message, github.event.inputs.tag) }}
         run: |
           cd ${{ github.workspace }}/cdp_opa_security_policies
           /tmp/opa eval --format json -i ${{ github.workspace }}/opa.out/*Creslab/*.template.json -d s3 "data"
